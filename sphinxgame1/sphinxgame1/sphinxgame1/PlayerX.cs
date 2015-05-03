@@ -8,31 +8,31 @@ using Microsoft.Xna.Framework.Input;
 
 namespace sphinxgame1
 {
-    class Player
+    class PlayerX
     {
-        protected Sprite leftRunningSprite;
-        protected Sprite rightRunningSprite;
-        protected Sprite leftStandingSprite;
-        protected Sprite rightStandingSprite;
+        protected PhysicsObject physObject;
         protected enum SpriteStates { LEFT, RIGHT, STANDING };
         protected SpriteStates spriteState = SpriteStates.STANDING;
         protected SpriteStates oldState = SpriteStates.RIGHT;
-        protected Vector2 velocity;
-        protected Vector2 location;
+
+        public PhysicsObject PhysObject
+        {
+            get { return physObject; }
+        }
 
         public Vector2 Velocity
         {
-            get { return velocity; }
-            set { velocity = value; }
+            get { return physObject.Velocity; }
+            set { physObject.Velocity = value; }
         }
 
         public Vector2 Location
         {
-            get { return location; }
-            set { location = value; }
+            get { return physObject.Location; }
+            set { physObject.Location = value; }
         }
 
-        public Player(Texture2D texture,
+        public PlayerX(Texture2D texture,
             Rectangle leftFrame,
             Rectangle rightFrame,
             Rectangle leftStandingFrame,
@@ -42,22 +42,22 @@ namespace sphinxgame1
             int screenWidth,
             int screenHeight)
         {
-            rightRunningSprite = new Sprite(texture,
+            Sprite rightRunningSprite = new Sprite(texture,
                 initialLocation,
                 Vector2.Zero,
                 rightFrame,
                 new Vector2(rightFrame.Width / 2, rightFrame.Height / 2));
-            leftRunningSprite = new Sprite(texture,
+            Sprite leftRunningSprite = new Sprite(texture,
                 initialLocation,
                 Vector2.Zero,
                 leftFrame,
                 new Vector2(leftFrame.Width / 2, leftFrame.Height / 2));
-            leftStandingSprite = new Sprite(texture,
+            Sprite leftStandingSprite = new Sprite(texture,
                  initialLocation,
                  Vector2.Zero,
                  leftStandingFrame,
                 new Vector2(leftStandingFrame.Width / 2, leftStandingFrame.Height / 2));
-            rightStandingSprite = new Sprite(texture,
+            Sprite rightStandingSprite = new Sprite(texture,
                 initialLocation,
                 Vector2.Zero,
                 rightStandingFrame,
@@ -78,59 +78,79 @@ namespace sphinxgame1
                      rightFrame.Height));
             }
 
-            location = initialLocation;
-            velocity = Vector2.Zero;
+            physObject = new PhysicsObject(initialLocation,
+                Vector2.Zero,
+                85.0f,
+                CollisionTypes.BOUNCE);
+            physObject.addSprite(rightRunningSprite);
+            physObject.addSprite(leftRunningSprite);
+            physObject.addSprite(rightStandingSprite);
+            physObject.addSprite(leftStandingSprite);
+            physObject.addGravity();
+            physObject.MaxVelocity = 2000 * Vector2.One;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (spriteState == SpriteStates.LEFT) leftRunningSprite.Draw(spriteBatch);
-            else if (spriteState == SpriteStates.RIGHT) rightRunningSprite.Draw(spriteBatch);
-            else if (oldState == SpriteStates.LEFT) leftStandingSprite.Draw(spriteBatch);
-            else rightStandingSprite.Draw(spriteBatch);
+            physObject.Draw(spriteBatch);
         }
 
         public virtual void Update(GameTime gameTime)
         {
             bool leftPressed = Keyboard.GetState().IsKeyDown(Keys.Left);
             bool rightPressed = Keyboard.GetState().IsKeyDown(Keys.Right);
+            bool upPressed = Keyboard.GetState().IsKeyDown(Keys.Up);
+            bool downPressed = Keyboard.GetState().IsKeyDown(Keys.Down);
 
             if (leftPressed && !rightPressed)
             {
                 oldState = spriteState = SpriteStates.LEFT;
-                velocity = new Vector2(-400, 0);
+                Velocity = new Vector2(-400, Velocity.Y);
             }
 
             else if (rightPressed && !leftPressed)
             {
                 oldState = spriteState = SpriteStates.RIGHT;
-                velocity = new Vector2(400, 0);
+                Velocity = new Vector2(400, Velocity.Y);
             }
             else
             {
                 spriteState = SpriteStates.STANDING;
-                velocity = Vector2.Zero;
+                Velocity = Vector2.UnitY * Velocity.Y;
             }
 
-            if ((!(velocity.X < 0 && location.X < 200)) && (!(velocity.X > 0 && location.X > 600)))
-                location += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //bool isColliding = false;
+            //foreach (PhysicsObject physObj in CollisionManager.ObjectList)
+            //    if ((physObj != physObject) && (physObject.isBoxColliding(physObj).Length() > 0))
+            //        isColliding = true;
 
+            if (upPressed && !downPressed && physObject.IsBoxColliding)
+            {
+                Velocity = new Vector2(Velocity.X, - 750);
+            }
 
             if (spriteState == SpriteStates.LEFT)
             {
-                leftRunningSprite.Location = location;
-                leftRunningSprite.Update(gameTime);
+                physObject.CurrentSprite = 1;
             }
             else if (spriteState == SpriteStates.RIGHT)
             {
-                rightRunningSprite.Location = location;
-                rightRunningSprite.Update(gameTime);
+                physObject.CurrentSprite = 0;
+            }
+            else if (oldState == SpriteStates.LEFT)
+            {
+                physObject.CurrentSprite = 3;
             }
             else
             {
-                rightStandingSprite.Location = leftStandingSprite.Location = location;
+                physObject.CurrentSprite = 2;
             }
 
+            if ((Velocity.X < 0 && Location.X < 200) || (Velocity.X > 0 && Location.X > 600))
+                physObject.FreezeX = true;
+            else physObject.FreezeX = false;
+
+            physObject.Update(gameTime);
         }
     }
 }

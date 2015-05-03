@@ -16,17 +16,21 @@ namespace sphinxgame1
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        Vector2 scrollVector;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         enum GameStates { TITLE, MENU, GAME, PAUSE, GAMEOVER };
         GameStates gameState;
+        SpriteFont font;
 
         private int screenWidth;
         private int screenHeight;
 
-        Player player;
-        Enemy enemy;
-        Background background;
+        PlayerX player;
+        EnemyX enemy;
+        BackgroundX background;
+        CollisionManager collisionManager;
 
         public Game1()
         {
@@ -62,6 +66,8 @@ namespace sphinxgame1
 
 
             // TODO: use this.Content to load your game content here
+            font = Content.Load<SpriteFont>("Arial");
+
             List<Texture2D> bgTextures = new List<Texture2D>();
 
             bgTextures.Add(Content.Load<Texture2D>(@"Textures\game_background"));
@@ -71,12 +77,12 @@ namespace sphinxgame1
             bgTextures.Add(Content.Load<Texture2D>(@"Textures\Background04"));
             bgTextures.Add(Content.Load<Texture2D>(@"Textures\Background05"));
 
-            background = new Background(screenWidth, screenHeight, bgTextures);
+            background = new BackgroundX(screenWidth, screenHeight, bgTextures);
 
             Texture2D playerSheet = Content.Load<Texture2D>(@"Textures\ContraSheet1"),
                 enemySheet = Content.Load<Texture2D>(@"Textures\enemies_sheet");
 
-            player = new Player(playerSheet,
+            player = new PlayerX(playerSheet,
                 new Rectangle(19, 134, 22, 36),
                 new Rectangle(239, 134, 22, 36),
                 new Rectangle(110, 17, 25, 36),
@@ -85,8 +91,10 @@ namespace sphinxgame1
                 new Vector2(130, 360),
                 screenWidth,
                 screenHeight);
+            player.PhysObject.addRectangle(new RectangleClass(player.Location.X, player.Location.Y, 22, 36));
+            player.PhysObject.addCircle(player.Location + new Vector2(11, 18), 11);
 
-            enemy = new Enemy(enemySheet,
+            enemy = new EnemyX(enemySheet,
                 new Rectangle(-2, 330, 33, 16),
                 new Rectangle(242, 330, 34, 16),
                 new Rectangle(109, 360, 21, 15),
@@ -95,6 +103,13 @@ namespace sphinxgame1
                 new Vector2(400, 360),
                 screenWidth,
                 screenHeight);
+            enemy.PhysObject.addRectangle(new RectangleClass(enemy.Location.X, enemy.Location.Y, 21, 15));
+            enemy.PhysObject.addCircle(enemy.Location + new Vector2(17, 8), 8);
+
+            collisionManager = new CollisionManager();
+            collisionManager.addObject(background.PhysObject);
+            collisionManager.addObject(player.PhysObject);
+            collisionManager.addObject(enemy.PhysObject);
         }
 
         /// <summary>
@@ -120,23 +135,26 @@ namespace sphinxgame1
             // TODO: Add your update logic here
             player.Update(gameTime);
 
-            Vector2 scrollVector;
+            //Vector2 scrollVector;
+            scrollVector = Vector2.Zero;
 
             if (player.Location.X < 200 && player.Velocity.X < 0)
             {
-                scrollVector = -player.Velocity;
+                scrollVector.X = -player.Velocity.X;
             }
             else if (player.Location.X > 600 && player.Velocity.X > 0)
             {
-                scrollVector = -player.Velocity;
+                scrollVector.X = -player.Velocity.X;
             }
-            else scrollVector = Vector2.Zero;
+            else scrollVector.X = 0;
 
             background.ScrollVector = enemy.ScrollVector = scrollVector;
 
             background.Update(gameTime);
 
             enemy.Update(gameTime);
+
+            collisionManager.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -154,6 +172,16 @@ namespace sphinxgame1
             background.Draw(spriteBatch);
             player.Draw(spriteBatch);
             enemy.Draw(spriteBatch);
+            /*spriteBatch.DrawString(font,
+                "Player location: " + player.Location +
+                "\nPlayer rectangle location: " + player.PhysObject.CollisionRectangles.ElementAt(0).Location +
+                "\nPlayer sprite location: " + player.PhysObject.SpriteList.ElementAt(0).Location +
+                "\nPlayer velocity: " + player.Velocity +
+                "\nBackground location: " + background.PhysObject.Location +
+                "\nRectangle location: " + background.PhysObject.CollisionRectangles.ElementAt(0).Location + 
+                "\nSprite location: " + background.PhysObject.SpriteList.ElementAt(0).Location,
+                Vector2.Zero,
+                Color.Red);*/
             spriteBatch.End();
 
             base.Draw(gameTime);
