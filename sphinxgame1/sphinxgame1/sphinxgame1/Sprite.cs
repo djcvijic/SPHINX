@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace sphinxgame1
 {
     class Sprite
     {
+
         private Texture2D texture;
         private Vector2 location;
         private Vector2 velocity;
@@ -19,11 +21,17 @@ namespace sphinxgame1
         private int frameWidth;
         private int frameHeight;
         private float scale = 1.0f;
+        private Vector2 origin;
+
+
+
+        public Sprite() { }
 
         public Sprite(Texture2D texture,
             Vector2 location,
             Vector2 velocity,
-            Rectangle initialFrame)
+            Rectangle initialFrame,
+            Vector2 origin)
         {
             this.texture = texture;
             this.location = location;
@@ -31,11 +39,18 @@ namespace sphinxgame1
             frames.Add(initialFrame);
             frameWidth = initialFrame.Width;
             frameHeight = initialFrame.Height;
+            this.origin = origin;
         }
 
         public void addFrame(Rectangle newFrame)
         {
             frames.Add(newFrame);
+        }
+
+        public Vector2 Origin
+        {
+            get { return origin; }
+            set { origin = value; }
         }
 
         public float Scale
@@ -126,10 +141,13 @@ namespace sphinxgame1
                 Source,
                 Color.White,
                 0.0f,
-                new Vector2(frameWidth / 2, frameHeight / 2),
+                origin,
                 scale,
                 SpriteEffects.None,
                 0.0f);
         }
+
+        
+
     }
 }

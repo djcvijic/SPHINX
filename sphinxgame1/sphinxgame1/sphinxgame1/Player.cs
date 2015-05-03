@@ -12,21 +12,29 @@ namespace sphinxgame1
     {
         private Sprite leftRunningSprite;
         private Sprite rightRunningSprite;
-        private Sprite leftStandingSprite;
-        private Sprite rightStandingSprite;
-        private enum SpriteStates { LEFT, RIGHT, STANDING };
-        SpriteStates spriteState = SpriteStates.STANDING;
-        SpriteStates oldState = SpriteStates.RIGHT;
+        private Sprite standingSprite;
+        private enum SpriteStates { LEFT, RIGHT, STANDING};
+        SpriteStates spriteState = SpriteStates.LEFT;
         private Rectangle areaLimit;
         private Vector2 velocity;
         private Vector2 location;
-        
+
+        public Vector2 Velocity
+        {
+            get {return velocity;}
+            set {velocity = value;}
+        }
+
+        public Vector2 Location
+        {
+            get { return location; }
+            set { location = value; }
+        }
 
         public Player(Texture2D texture,
             Rectangle leftFrame,
             Rectangle rightFrame,
-            Rectangle leftStandingFrame,
-            Rectangle rightStandingFrame,
+            Rectangle standingFrame,
             int frameNumber,
             Vector2 initialLocation,
             int screenWidth,
@@ -35,22 +43,24 @@ namespace sphinxgame1
             rightRunningSprite = new Sprite(texture,
                 initialLocation,
                 Vector2.Zero,
-                rightFrame);
+                rightFrame,
+                new Vector2(rightFrame.Width / 2, rightFrame.Height /2));
+
             leftRunningSprite = new Sprite(texture,
                 initialLocation,
                 Vector2.Zero,
-                leftFrame);
-            leftStandingSprite = new Sprite(texture,
-                 initialLocation,
-                 Vector2.Zero,
-                 leftStandingFrame);
-            rightStandingSprite = new Sprite(texture,
+                leftFrame,
+                new Vector2(leftFrame.Width / 2, leftFrame.Height / 2));
+
+            standingSprite = new Sprite(texture,
                 initialLocation,
                 Vector2.Zero,
-                rightStandingFrame);
+                standingFrame,
+                new Vector2(leftFrame.Width / 2, leftFrame.Height / 2));
 
-            leftRunningSprite.Scale = rightRunningSprite.Scale = leftStandingSprite.Scale = rightStandingSprite.Scale = 2.0f;
-            leftRunningSprite.FrameTime = rightRunningSprite.FrameTime = leftStandingSprite.FrameTime = rightStandingSprite.FrameTime = 0.1f;
+            leftRunningSprite.Scale = rightRunningSprite.Scale = 2.0f;
+            standingSprite.Scale = 1.8f;
+            leftRunningSprite.FrameTime = rightRunningSprite.FrameTime = standingSprite.FrameTime = 0.1f;
 
             areaLimit = new Rectangle(0, 0, screenWidth, 390);
 
@@ -66,33 +76,31 @@ namespace sphinxgame1
                      rightFrame.Height));
             }
 
-            location = initialLocation;
-            velocity = Vector2.Zero;
+            this.location = initialLocation;
+            this.velocity = Vector2.Zero;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             if (spriteState == SpriteStates.LEFT) leftRunningSprite.Draw(spriteBatch);
             else if (spriteState == SpriteStates.RIGHT) rightRunningSprite.Draw(spriteBatch);
-            else if (oldState == SpriteStates.LEFT) leftStandingSprite.Draw(spriteBatch);
-            else rightStandingSprite.Draw(spriteBatch);
+            else standingSprite.Draw(spriteBatch);
         }
 
         public void Update(GameTime gameTime)
         {
-            bool leftPressed = Keyboard.GetState().IsKeyDown(Keys.Left);
-            bool rightPressed = Keyboard.GetState().IsKeyDown(Keys.Right);
 
-            if (leftPressed && !rightPressed)
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left) )
             {
-                oldState = spriteState = SpriteStates.LEFT;
-                velocity = new Vector2(-200, 0);
+                spriteState = SpriteStates.LEFT;
+                velocity = new Vector2(-400, 0);
             }
 
-            else if (rightPressed && !leftPressed)
+            else if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                oldState = spriteState = SpriteStates.RIGHT;
-                velocity = new Vector2(200, 0);
+                spriteState = SpriteStates.RIGHT;
+                velocity = new Vector2(400, 0);
             }
             else
             {
@@ -100,7 +108,12 @@ namespace sphinxgame1
                 velocity = Vector2.Zero;
             }
 
-            location += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if ((!(velocity.X < 0 && location.X < 200)) && (!(velocity.X > 0 && location.X > 600))) // tj. ako ne skroluje
+                location += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            
+
+
+
 
 
             if (spriteState == SpriteStates.LEFT)
@@ -115,9 +128,9 @@ namespace sphinxgame1
             }
             else
             {
-                rightStandingSprite.Location = leftStandingSprite.Location = location;
+                standingSprite.Location = location;
+                standingSprite.Update(gameTime);
             }
-
         }
     }
 }
