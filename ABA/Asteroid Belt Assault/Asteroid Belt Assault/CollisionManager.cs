@@ -35,7 +35,6 @@ namespace Asteroid_Belt_Assault
         /// </summary>
         private ExplosionManager explosionManager;
 
-        private List<Sprite> Svi = new List<Sprite>();
 
 
         /// <summary>
@@ -81,7 +80,24 @@ namespace Asteroid_Belt_Assault
         private void checkShotToEnemyCollisions()
         {
           
-            foreach (Sprite shot in Svi)
+            foreach (Sprite shot in player1.ShotManager.Shots)
+            {
+                foreach (Enemy enemy in enemyManager.Enemies)
+                {
+                    if (shot.IsCircleColliding(
+                        enemy.Sprite.Center,
+                        enemy.Sprite.CollisionRadius))
+                    {
+                        shot.Location = offScreen;
+                        enemy.Destroyed = true;
+                        hud.Score += 10;
+                        explosionManager.AddExplosion(
+                            enemy.Sprite.Center,
+                            enemy.Sprite.Velocity / 10);
+                    }
+                }
+            }
+            foreach (Sprite shot in player2.ShotManager.Shots)
             {
                 foreach (Enemy enemy in enemyManager.Enemies)
                 {
@@ -103,7 +119,24 @@ namespace Asteroid_Belt_Assault
         private void checkShotToAsteroidCollisions()
         {
             // player shots
-            foreach (Sprite shot in Svi)
+            foreach (Sprite shot in player1.ShotManager.Shots)
+            {
+                foreach (Sprite asteroid in asteroids.asteroids)
+                {
+                    if (shot.IsCircleColliding(
+                        asteroid.Center,
+                        asteroid.CollisionRadius))
+                    {
+                        shot.Location = offScreen;
+                        explosionManager.AddExplosion(
+                            asteroid.Center,
+                            asteroid.Velocity / 5);
+                        asteroid.Location = offScreen;
+                        hud.Score += 5;
+                    }
+                }
+            }
+            foreach (Sprite shot in player2.ShotManager.Shots)
             {
                 foreach (Sprite asteroid in asteroids.asteroids)
                 {
@@ -293,10 +326,6 @@ namespace Asteroid_Belt_Assault
         /// </summary>
         public void CheckCollisions()
         {
-            foreach (Sprite shot in player1.ShotManager.Shots)
-                Svi.Add(shot);
-            foreach (Sprite shot in player2.ShotManager.Shots)
-                Svi.Add(shot);
             checkShotToEnemyCollisions();
             checkShotToAsteroidCollisions(); // <--- proverava i metke igraca i metke neprijatelja
             checkEnemyShotToPlayerCollision();

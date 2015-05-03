@@ -35,8 +35,12 @@ namespace Asteroid_Belt_Assault
         int gameOverTimer;
 
         
-        enum states { MENU, GAME, DESTROYED };
+        enum states { MENU, GAME, DESTROYED, PAUSE};
         private states state;
+
+        public SpriteFont Font { get; set; }
+
+        bool pauseKeyDown = false;
 
         public Game1()
         {
@@ -69,6 +73,7 @@ namespace Asteroid_Belt_Assault
 
             hud = new HUD(screenWidth-200, 0);
             hud.Font = Content.Load<SpriteFont>("nasFont");
+            Font = Content.Load<SpriteFont>("nasFont");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -162,59 +167,89 @@ namespace Asteroid_Belt_Assault
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
+
+        protected void checkPause()
+        {
+            bool pauseKeyDownThisFrame = Keyboard.GetState().IsKeyDown(Keys.P);
+            if (!pauseKeyDown && pauseKeyDownThisFrame)
+            {
+                if (state!=states.PAUSE)
+                    state = states.PAUSE;
+                else
+                    state = states.GAME;
+            }
+            pauseKeyDown = pauseKeyDownThisFrame;
+        }
+        
+
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            
+                      
             starField.Update(gameTime);
-            if (ship1.Destroyed == true && ship2.Destroyed== true)
-            {
-                state = states.DESTROYED;
-                gameOverTimer = 5000;
-                ship1.Destroyed = false;
-                ship2.Destroyed = false;
-            }
 
-            switch (state)
-            {
-                case states.MENU:
-                    {
-                        IsMouseVisible = true;
-                        menuButtons.Update(gameTime);
-                        if (menuButtons.BS == ButtonStates.B1PR)
-                        {
-                            IsMouseVisible = false;
-                            state = states.GAME;
-                        }
-                        if (menuButtons.BS == ButtonStates.B3PR)
-                        {
-                            this.Exit();
-                        }
-                        break;
-                    }
-                case states.GAME:
-                    {
-                        if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                            state = states.MENU;
+           
 
-                        asteroids.Update(gameTime);
-                        Vector2 initialShipLoc = new Vector2((float)screenWidth / 2 - 25, screenHeight - 50);
-                        ship1.Update(gameTime);
-                        ship2.Update(gameTime);
-                        enemyManager.Update(gameTime);
-                        collisionManager.CheckCollisions();
-                        explosionManager.Update(gameTime);
-                        break;
-                    }
-                case states.DESTROYED:
-                    {
-                        gameOverTimer -= gameTime.ElapsedGameTime.Milliseconds;
-                        if (gameOverTimer <= 0) { LoadContent(); }
-                        break;
-                    }
+        
+                switch (state)
+                {
+                    case states.MENU:
+                        {
+                            IsMouseVisible = true;
+                            menuButtons.Update(gameTime);
+                            if (menuButtons.BS == ButtonStates.B1PR)
+                            {
+                                IsMouseVisible = false;
+                                state = states.GAME;
+                            }
+                            if (menuButtons.BS == ButtonStates.B1PR)
+                            {
+                                
+                            }
+                            if (menuButtons.BS == ButtonStates.B3PR)
+                            {
+                                this.Exit();
+                            }
+                            break;
+                        }
+                    case states.GAME:
+                        {
+                            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                                state = states.MENU;
+
+                            checkPause();
+
+                            if (ship1.Destroyed == true && ship2.Destroyed == true)
+                            {
+                                state = states.DESTROYED;
+                                gameOverTimer = 5000;
+                                ship1.Destroyed = false;
+                                ship2.Destroyed = false;
+                            }
+
+                            asteroids.Update(gameTime);
+                            Vector2 initialShipLoc = new Vector2((float)screenWidth / 2 - 25, screenHeight - 50);
+                            ship1.Update(gameTime);
+                            ship2.Update(gameTime);
+                            enemyManager.Update(gameTime);
+                            collisionManager.CheckCollisions();
+                            explosionManager.Update(gameTime);
+                            break;
+                        }
+                    case states.DESTROYED:
+                        {
+                            gameOverTimer -= gameTime.ElapsedGameTime.Milliseconds;
+                            if (gameOverTimer <= 0) { LoadContent(); }
+                            break;
+                        }
+                    case states.PAUSE:
+                        {
+                            checkPause();
+                            break;
+                        }
+
+                
             }
-   
-            base.Update(gameTime);
+                base.Update(gameTime);
         }
 
         /// <summary>
@@ -229,30 +264,41 @@ namespace Asteroid_Belt_Assault
 
             starField.Draw(spriteBatch);
 
-            switch (state)
-            {
-                case (states.MENU):
+
+
+                switch (state)
+                {
+                    case (states.MENU):
+                        {
+                            menuButtons.Draw(spriteBatch);
+                            break;
+                        }
+                    case (states.GAME):
+                        {
+                            asteroids.Draw(spriteBatch);
+                            ship1.Draw(spriteBatch);
+                            ship2.Draw(spriteBatch);
+                            enemyManager.Draw(spriteBatch);
+                            explosionManager.Draw(spriteBatch);
+                            hud.Draw(spriteBatch);
+                            break;
+                        }
+                    case (states.DESTROYED):
+                        {
+                            gameOver.Draw(spriteBatch);
+                            break;
+                        }
+                    case(states.PAUSE):
                     {
-                        menuButtons.Draw(spriteBatch);
+                        spriteBatch.DrawString(
+                            Font,
+                            "PAUSED",
+                            new Vector2(screenWidth / 2 - 10, screenHeight / 2),
+                            Color.White);
                         break;
                     }
-                case (states.GAME):
-                    {
-                        asteroids.Draw(spriteBatch);
-                        ship1.Draw(spriteBatch);
-                        ship2.Draw(spriteBatch);
-                        enemyManager.Draw(spriteBatch);
-                        explosionManager.Draw(spriteBatch);
-                        hud.Draw(spriteBatch);
-                        break;
-                    }
-                case (states.DESTROYED):
-                    {
-                        gameOver.Draw(spriteBatch);
-                        break;
-                    }
-            }
-     
+                }
+
             spriteBatch.End();
             base.Draw(gameTime);
         }
