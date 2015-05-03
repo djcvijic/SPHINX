@@ -84,9 +84,10 @@ namespace sphinxgame1
                 new Vector2(800/2, 566 / 2));
 
             player = new Player(playerSheet,
-                new Rectangle(20, 134, 20, 34),
-                new Rectangle(144+96, 134, 20, 34),
-                new Rectangle(60, 240, 20, 45),
+                new Rectangle(19, 134, 22, 36),
+                new Rectangle(239, 134, 22, 36),
+                new Rectangle(110, 17, 25, 36),
+                new Rectangle(144, 17, 25, 36),
                 5,
                 new Vector2(130, 360),
                 screenWidth,
@@ -132,7 +133,7 @@ namespace sphinxgame1
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
             
             // TODO: Add your update logic here
