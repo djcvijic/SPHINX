@@ -29,6 +29,7 @@ namespace Asteroid_Belt_Assault
         EnemyManager enemyManager;
         ExplosionManager explosionManager;
         CollisionManager collisionManager;
+        Vector2 pauseLoc;
 
         int screenWidth;
         int screenHeight;
@@ -73,6 +74,7 @@ namespace Asteroid_Belt_Assault
 
             hud = new HUD(screenWidth-200, 0);
             hud.Font = Content.Load<SpriteFont>("nasFont");
+            pauseLoc = new Vector2(screenWidth/2-10, screenHeight/2);
             Font = Content.Load<SpriteFont>("nasFont");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -293,7 +295,7 @@ namespace Asteroid_Belt_Assault
                         spriteBatch.DrawString(
                             Font,
                             "PAUSED",
-                            new Vector2(screenWidth / 2 - 10, screenHeight / 2),
+                            pauseLoc,
                             Color.White);
                         break;
                     }

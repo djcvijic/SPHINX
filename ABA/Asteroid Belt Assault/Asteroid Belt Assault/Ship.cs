@@ -93,7 +93,7 @@ namespace Asteroid_Belt_Assault
             Keys pucanje)
         {
             ship = new Sprite(initialLocation, texture, initialFrame, Vector2.Zero);
-            areaLimit = new Rectangle(0, screenHeight / 2, screenWidth, screenHeight/2);
+            areaLimit = new Rectangle(0, 0, screenWidth, screenHeight);
 
             // pošto animaciju sačinjavaju 3 frejma, a jedan je već dodat u okviru konstruktora
             // za sprite, potrebno je dodati još 2 susedna frejma sa sprite sheet-a.

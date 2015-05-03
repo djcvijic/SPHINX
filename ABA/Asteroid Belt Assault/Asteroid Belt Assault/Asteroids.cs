@@ -160,7 +160,7 @@ namespace Asteroid_Belt_Assault
             do
             {
                 tryCount++;
-                switch (rand.Next(0, 3))
+                /*switch (rand.Next(0, 3))
                 {
                     //asteroidi ce biti stvarani iza leve ivice prozora, po celoj visini
                     case 0:
@@ -180,7 +180,9 @@ namespace Asteroid_Belt_Assault
                         location.Y = -initialFrame.Height;
                         break;
 
-                }
+                }*/
+                location.X = rand.Next(0, screenWidth);
+                location.Y = rand.Next(0, screenHeight);
 
                 for (int i = 0; i < asteroids.Count; i++)
                 {
@@ -236,7 +238,7 @@ namespace Asteroid_Belt_Assault
         /// <returns></returns>
         private Vector2 randomVelocity()
         {
-
+            /*
             //definisanje nasumicnog pravca vektora brzine
             Vector2 velocity = new Vector2(
                 rand.Next(0, 101) - 50,
@@ -247,7 +249,8 @@ namespace Asteroid_Belt_Assault
 
             //definisanje nasumicnog inteziteta vektora brzine
             velocity *= rand.Next(minSpeed, maxSpeed);
-            return velocity;
+            return velocity;*/
+            return Vector2.Zero;
         } 
 
         #endregion
@@ -270,6 +273,11 @@ namespace Asteroid_Belt_Assault
                     asteroid.Location = randomLocation();
                     asteroid.Velocity = randomVelocity();
                 }
+                 //if (!asteroid.Velocity.Equals(Vector2.Zero))
+
+                float a = 0.01f;
+                asteroid.Velocity *= 1 - a;
+ 
             }
 
 

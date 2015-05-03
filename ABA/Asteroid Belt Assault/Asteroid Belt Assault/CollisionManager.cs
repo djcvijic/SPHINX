@@ -265,14 +265,16 @@ namespace Asteroid_Belt_Assault
                     player1.Sprite.Center,
                     player1.Sprite.CollisionRadius))
                 {
-                    player1.Destroyed = true;
+                    /*player1.Destroyed = true;
                     explosionManager.AddExplosion(
                         player1.Sprite.Center,
                         player1.Sprite.Velocity / 5);
                     explosionManager.AddExplosion(
                         asteroid.Center,
                         asteroid.Velocity / 5);
-                    asteroid.Location = offScreen;
+                    asteroid.Location = offScreen;*/
+
+                    asteroid.Velocity = player1.Sprite.Velocity * 1.5f;
                 }
                 if (asteroid.IsCircleColliding(
                     player2.Sprite.Center,
@@ -293,7 +295,7 @@ namespace Asteroid_Belt_Assault
 
         /// <summary>
         /// Proverava da li je došlo do kolizije neprijatelja
-        /// sa igracem, nakon čega sledi uništenje igraca i neprijatelja
+        /// sa asteroidom, nakon čega sledi uništenje asteroida i neprijatelja
         /// </summary>
         private void checkEnemyToAsteroidCollision()
         {
