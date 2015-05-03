@@ -51,7 +51,7 @@ namespace mario8
             // spreèavamo brod da izaðe izvan dozvoljenog pravouganika areaLimit
             Vector2 location = playerSprite.Location;
 
-            if (location.X < areaLimit.X)
+            /*if (location.X < areaLimit.X)
                 location.X = areaLimit.X;
 
             if (location.X + playerSprite.Destination.Width > areaLimit.Width)
@@ -61,7 +61,7 @@ namespace mario8
                 location.Y = areaLimit.Y;
 
             if (location.Y + playerSprite.Destination.Height > areaLimit.Y + areaLimit.Height)
-                location.Y = areaLimit.Y + areaLimit.Height - playerSprite.Destination.Height;
+                location.Y = areaLimit.Y + areaLimit.Height - playerSprite.Destination.Height;*/
 
             playerSprite.Location = location;
         }

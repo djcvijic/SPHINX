@@ -19,9 +19,7 @@ namespace mario8
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        Texture2D backgroundSheet;
-        Texture2D charSheet;
-        Texture2D enemySheet;
+        Texture2D spriteSheet;
         //Mario mario;
         //Background background;
         //Platforms platforms;
@@ -37,8 +35,8 @@ namespace mario8
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferHeight = 566;
-            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 300;
+            graphics.PreferredBackBufferWidth = 400;
         }
 
         /// <summary>
