@@ -57,8 +57,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Textures\smb2_enemies_sheet.png">
-      <Name>smb2_enemies_sheet</Name>
+    <Compile Include="Textures\enemies_sheet.png">
+      <Name>enemies_sheet</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

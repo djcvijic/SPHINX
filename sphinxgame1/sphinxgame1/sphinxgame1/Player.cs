@@ -10,16 +10,16 @@ namespace sphinxgame1
 {
     class Player
     {
-        private Sprite leftRunningSprite;
-        private Sprite rightRunningSprite;
-        private Sprite leftStandingSprite;
-        private Sprite rightStandingSprite;
-        private enum SpriteStates { LEFT, RIGHT, STANDING };
-        SpriteStates spriteState = SpriteStates.STANDING;
-        SpriteStates oldState = SpriteStates.RIGHT;
-        private Rectangle areaLimit;
-        private Vector2 velocity;
-        private Vector2 location;
+        protected Sprite leftRunningSprite;
+        protected Sprite rightRunningSprite;
+        protected Sprite leftStandingSprite;
+        protected Sprite rightStandingSprite;
+        protected enum SpriteStates { LEFT, RIGHT, STANDING };
+        protected SpriteStates spriteState = SpriteStates.STANDING;
+        protected SpriteStates oldState = SpriteStates.RIGHT;
+        protected Rectangle areaLimit;
+        protected Vector2 velocity;
+        protected Vector2 location;
 
         public Vector2 Velocity
         {
@@ -71,11 +71,11 @@ namespace sphinxgame1
 
             for (int i = 1; i < frameNumber; i++)
             {
-                leftRunningSprite.addFrame(new Rectangle(leftFrame.X + i * 24,
+                leftRunningSprite.addFrame(new Rectangle(leftFrame.X + i * (leftFrame.Width + 2),
                      leftFrame.Y,
                      leftFrame.Width,
                      leftFrame.Height));
-                rightRunningSprite.addFrame(new Rectangle(rightFrame.X - i * 24,
+                rightRunningSprite.addFrame(new Rectangle(rightFrame.X - i * (rightFrame.Width + 2),
                      rightFrame.Y,
                      rightFrame.Width,
                      rightFrame.Height));
@@ -93,7 +93,7 @@ namespace sphinxgame1
             else rightStandingSprite.Draw(spriteBatch);
         }
 
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             bool leftPressed = Keyboard.GetState().IsKeyDown(Keys.Left);
             bool rightPressed = Keyboard.GetState().IsKeyDown(Keys.Right);

@@ -28,6 +28,7 @@ namespace sphinxgame1
 
         Sprite background;
         Player player;
+        Enemy enemy;
 
         Sprite mBackgroundOne;
         Sprite mBackgroundTwo;
@@ -75,7 +76,7 @@ namespace sphinxgame1
             mBackgroundFiveSheet = Content.Load<Texture2D>(@"Textures\Background04");
 
             playerSheet = Content.Load<Texture2D>(@"Textures\ContraSheet1");
-            enemySheet = Content.Load<Texture2D>(@"Textures\smb2_enemies_sheet");
+            enemySheet = Content.Load<Texture2D>(@"Textures\enemies_sheet");
 
             background = new Sprite(backgroundSheet,
                 Vector2.Zero,
@@ -92,9 +93,16 @@ namespace sphinxgame1
                 new Vector2(130, 360),
                 screenWidth,
                 screenHeight);
-                //new Vector2(130, 390),
-                //Vector2.Zero,
-                //new Rectangle(144, 134, 20, 34));
+
+            enemy = new Enemy(enemySheet,
+                new Rectangle(-2, 330, 33, 16),
+                new Rectangle(242, 330, 34, 16),
+                new Rectangle(109, 360, 21, 15),
+                new Rectangle(141, 360, 21, 15),
+                4,
+                new Vector2(400, 360),
+                screenWidth,
+                screenHeight);
 
 
             mBackgroundOne = new Sprite(mBackgroundOneSheet,Vector2.Zero,Vector2.Zero,new Rectangle(0,0,800,566),new Vector2(400,283));
@@ -165,27 +173,29 @@ namespace sphinxgame1
             }
 
 
-            Vector2 backgroundsVelocity;
+            Vector2 scrollVector;
 
             player.Update(gameTime);
 
             if (player.Location.X < 200 && player.Velocity.X < 0)
             {
-                backgroundsVelocity = -player.Velocity;
+                scrollVector = -player.Velocity;
             }
             else if (player.Location.X > 600 && player.Velocity.X > 0)
             {
-                backgroundsVelocity = -player.Velocity;
+                scrollVector = -player.Velocity;
             }
-            else backgroundsVelocity = Vector2.Zero;
+            else scrollVector = Vector2.Zero;
 
-            mBackgroundOne.Velocity = mBackgroundTwo.Velocity = mBackgroundThree.Velocity = mBackgroundFour.Velocity = mBackgroundFive.Velocity = backgroundsVelocity;
+            mBackgroundOne.Velocity = mBackgroundTwo.Velocity = mBackgroundThree.Velocity = mBackgroundFour.Velocity = mBackgroundFive.Velocity = scrollVector;
 
             mBackgroundOne.Update(gameTime);
             mBackgroundTwo.Update(gameTime);
             mBackgroundThree.Update(gameTime);
             mBackgroundFour.Update(gameTime);
             mBackgroundFive.Update(gameTime);
+
+            enemy.Update(gameTime, scrollVector);
             
             background.Update(gameTime);
             
@@ -210,6 +220,7 @@ namespace sphinxgame1
             mBackgroundFour.Draw(this.spriteBatch);
             mBackgroundFive.Draw(this.spriteBatch);
             player.Draw(spriteBatch);
+            enemy.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);
