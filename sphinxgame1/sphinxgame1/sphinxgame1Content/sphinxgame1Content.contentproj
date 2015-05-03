@@ -79,6 +79,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Textures\Background05.png">
       <Name>Background05</Name>
       <Importer>TextureImporter</Importer>

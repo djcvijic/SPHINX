@@ -16,6 +16,7 @@ namespace sphinxgame1
     {
 
         float velocityChangeTime = 0.05f, velocityChangeTimeTimer = 0.0f; // sekunde
+        private Vector2 scrollVector;
 
         public Enemy(Texture2D texture,
             Rectangle leftFrame,
@@ -31,7 +32,12 @@ namespace sphinxgame1
             Velocity = new Vector2(30,0);
         }
 
-        public virtual void Update(GameTime gameTime, Vector2 scrollVector)
+        public Vector2 ScrollVector
+        {
+            set { scrollVector = value; }
+        }
+
+        public override void Update(GameTime gameTime)
         {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
             velocityChangeTimeTimer += elapsed;
